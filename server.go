@@ -24,6 +24,8 @@ func main() {
 
 	r := gin.Default()
 
+	r.POST("/login", loginHandler)
+
 	protected := r.Group("/", authorizationMiddleware)
 
 	protected.GET("/books", handler.listBookHandler)
@@ -31,7 +33,6 @@ func main() {
 	protected.DELETE("/books/:id", handler.deleteBookHandler)
 
 	r.Run()
-
 }
 
 func authorizationMiddleware(c *gin.Context) {
@@ -59,6 +60,14 @@ type Book struct {
 	Author string `json:"author"`
 }
 
+func loginHandler(c *gin.Context) {
+	//implement login logic here
+
+	c.JSON(http.StatusOK, gin.H{
+		"token": "LOGIN_TOKEN",
+	})
+}
+
 func (h *Handler) listBookHandler(c *gin.Context) {
 	s := c.Request.Header.Get("Authorization")
 
@@ -79,7 +88,7 @@ func (h *Handler) listBookHandler(c *gin.Context) {
 }
 
 func validateToken(token string) error {
-	if token == "" {
+	if token != "ACCESS_TOKEN" {
 		return fmt.Errorf("token should not be empty")
 	}
 	return nil
